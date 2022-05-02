@@ -12,7 +12,7 @@ library(pracma)
 library(fBasics)
 library(e1071)
 library(changepoint)
-library(DT)
+
 
 d <- getwd()
 fls <- dir(d,recursive = TRUE)
@@ -96,6 +96,53 @@ make_peak <- function(x){
   return(Peak_rslt)
 }
 
+make_peak2 <- function(x){
+  Peak_rslt <- data.frame()
+  for(d in fls){
+    f <- get(d)
+    p <- findpeaks(f$maguserAcceleration, threshold = x)# findpeaks는 벡터 값을 입력을 받음
+    Peak_rslt <- rbind(Peak_rslt, data.frame(d,
+                                             f_n = ifelse(!is.null(p),dim(p)[1],0), # 피크의 개수를 카운트, dim함수는 행과 열을 반환해줌 -> 1이 행
+                                             p_interval = ifelse(!is.null(p),ifelse(dim(p)[1]> 1, mean(diff(sort(p[,2]))),0),0),
+                                             p_interval_std = ifelse(!is.null(p),ifelse(dim(p)[1]> 2,std(diff(sort(p[,2]))),0),0),
+                                             p_mean = ifelse(!is.null(p),mean(p[,1]),0),
+                                             p_max = ifelse(!is.null(p),max(p[,1]),0),
+                                             p_min = ifelse(!is.null(p),min(p[,1]),0),
+                                             p_std = ifelse(!is.null(p),ifelse(dim(p)[1] >= 2,std(p[,1]),0),0)))
+  }
+  
+  
+  
+  return(Peak_rslt)
+}
+
+ch_pt <- data.frame()
+for(d in fls){
+  f <- get(d)
+  f <- mag(f, 'rotationRate')
+  f <- mag(f, 'userAcceleration')
+  rslt <- sapply(f %>% select(magrotationRate, maguserAcceleration), cpt.mean)
+  rslt_cpts1 <- cpts(rslt$magrotationRate)
+  rslt_cpts2 <- cpts(rslt$maguserAcceleration)
+  rslt2 <- sapply(f %>% select(magrotationRate, maguserAcceleration), cpt.var)
+  rslt2_cpts1 <- cpts(rslt$magrotationRate)
+  rslt2_cpts2 <- cpts(rslt$maguserAcceleration)
+  rslt3 <- sapply(f %>% select(magrotationRate, maguserAcceleration), cpt.meanvar)
+  rslt3_cpts1 <- cpts(rslt$magrotationRate)
+  rslt3_cpts2 <- cpts(rslt$maguserAcceleration)
+  ch_pt <- rbind(ch_pt,
+                 data.frame(d,cp1 = length(rslt_cpts1), cp2 = length(rslt_cpts2),
+                            cp3 = length(rslt2_cpts1), cp4 = length(rslt2_cpts2),
+                            cp5 = length(rslt3_cpts1), cp6 = length(rslt3_cpts2))
+  )
+}
+
+temp <- data.frame()
+for(i in 1:nrow(ch_pt)){
+  temp <- rbind(temp,id_f(ch_pt$d[i]))
+}
+
+ch_pt <- cbind(ch_pt,temp)
 
 
 RF <- make_Weka_classifier("weka/classifiers/trees/RandomForest")

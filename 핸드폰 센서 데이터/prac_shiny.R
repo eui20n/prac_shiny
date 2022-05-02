@@ -1,7 +1,8 @@
 #setwd("C:\\Users\\kimeu\\Desktop\\수업\\4학년 1학기\\비정형데이터분석\\자료\\A_DeviceMotion_data")
-#library(shiny)
-#library(tidyverse)
-#library(shinydashboard)
+
+library(DT)
+library(shiny)
+library(shinydashboard)
 
 sidebar <- dashboardSidebar(
   sidebarMenu(
@@ -82,9 +83,8 @@ body <- dashboardBody(
               titlePanel("변화 분석"),
               fluidRow(
                 column(
-                  width = 3,
-                  h2("무엇인가 쓰기"),
-                  submitButton(text = '변경사항을 적용합니다.')
+                  width = 10,
+                  dataTableOutput(outputId = 'ch_DT')
                 )
               )
             )
@@ -125,9 +125,10 @@ body <- dashboardBody(
                   sliderInput(inputId = 'threshold_model',
                               label = ' 피크의 임계치를 선택해 주세요',
                               value = 3,
-                              min = 1,
+                              min = 0,
                               max = 5,
                               step = 1),
+                  helpText("만약 임계치를 0으로 설정하면 훈련과 검증에서 피크분석은 빠집니다."),
                   selectInput(inputId = "sel_ch",
                               label = '변화 분석을 사용할지 말지 선택해 주세요',
                               choices = c('yes', 'no'),
@@ -158,7 +159,7 @@ ui <- dashboardPage(
   body
 )
 
-server <- function(input, output, sesstion){
+server <- function(input, output, session){
   
   # 통계 분석
   statistics_data <- reactive({
@@ -246,6 +247,14 @@ server <- function(input, output, sesstion){
     peak_data()
   })
   
+  # 변화분석
+  ch_data <- reactive({
+    x <- ch_pt %>% select(-exp_no,-id,-d,-activity)
+  })
+  
+  output$ch_DT <- renderDataTable(
+    ch_data()
+  )
   
   # PCA
   pca_data <- reactive({
@@ -270,8 +279,13 @@ server <- function(input, output, sesstion){
     if(input$PCA_sta == '통계'){
       x <- statistics_data()
     }
-    x <- cbind(x,make_peak(input$threshold_model))
-    result <- x %>% select(-d)
+    if(input$sel_ch == 'yes'){
+      x <- cbind(x,ch_data())
+    }
+    if(input$threshold_model != 0){
+      x <- cbind(x,make_peak(input$threshold_model) %>% select(-d))
+    }
+    result <- x 
     result
   })
   
@@ -289,6 +303,5 @@ server <- function(input, output, sesstion){
     )
   })
 }
-
 
 shinyApp(ui = ui, server = server)
