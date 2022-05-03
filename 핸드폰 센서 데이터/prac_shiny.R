@@ -16,6 +16,7 @@ sidebar <- dashboardSidebar(
     
   )
 )
+
 body <- dashboardBody(
   tags$style(HTML('
     /* body */
@@ -23,6 +24,7 @@ body <- dashboardBody(
         background-color: #d6eef8;
       }
   ')),
+  
   tabItems(
     tabItem(tabName = "statistics",
             fluidPage(
@@ -59,6 +61,7 @@ body <- dashboardBody(
                 column(
                   width = 4,
                   box(width = 7,
+                  helpText('경로에 다른 파일이 있으면 안됩니다.'),
                   sliderInput(inputId = "threshold",
                               label = "임계치를 선택해주세요",
                               value = 3,
@@ -147,11 +150,11 @@ body <- dashboardBody(
                   sliderInput(inputId = 'fold',
                               label = '교차 검증 횟수를 선택하세요',
                               value = 10,
-                              min = 1,
+                              min = 2,
                               max = 20,
                               step = 1),
                   helpText('훈련할땐 교차검증이 사용되지 않습니다.'),
-                  submitButton(text = '변경사항을 적용합니다.'))
+                  submitButton(text = '변경사항을 적용합니다.')),
                 ),
                 column(
                   width = 8,
@@ -234,10 +237,7 @@ server <- function(input, output, session){
   
   output$print_sta_data <- renderDataTable(
     statistics_data()
-  )
-  
-  
-  
+    )
   
   # 피크 분석
   peak_data <- reactive({
@@ -254,9 +254,9 @@ server <- function(input, output, session){
     points(point_temp[,2],point_temp[,1])
   })
   
-  output$peak_DT <- DT::renderDataTable({
+  output$peak_DT <- DT::renderDataTable(
     peak_data()
-  })
+  )
   
   # 변화분석
   ch_data <- reactive({
