@@ -1,4 +1,5 @@
 #setwd("C:\\Users\\kimeu\\Desktop\\수업\\4학년 1학기\\비정형데이터분석\\자료\\A_DeviceMotion_data")
+#load("C:\\Users\\kimeu\\Desktop\\수업\\4학년 1학기\\비정형데이터분석\\자료\\R파일\\shiny_data.RData")
 
 library(DT)
 library(shiny)
@@ -16,6 +17,12 @@ sidebar <- dashboardSidebar(
   )
 )
 body <- dashboardBody(
+  tags$style(HTML('
+    /* body */
+      .content-wrapper, .right-side {
+        background-color: #d6eef8;
+      }
+  ')),
   tabItems(
     tabItem(tabName = "statistics",
             fluidPage(
@@ -23,11 +30,12 @@ body <- dashboardBody(
               fluidRow(
                 column(
                   width = 3,
+                  box(width = 7,
                   selectInput(inputId = 'statistics_input',
                               label = '통계치를 선택해 주세요',
                               choices = c("평균","최소값","최대값","표준편차","왜도","rms","rss","첨도"),
                               selected = NULL),
-                  submitButton(text = "변경사항을 적용합니다.")
+                  submitButton(text = "변경사항을 적용합니다."))
                 ),
                 column(
                   width = 4,
@@ -50,6 +58,7 @@ body <- dashboardBody(
               fluidRow(
                 column(
                   width = 4,
+                  box(width = 7,
                   sliderInput(inputId = "threshold",
                               label = "임계치를 선택해주세요",
                               value = 3,
@@ -61,17 +70,17 @@ body <- dashboardBody(
                             value = 'dws_1/sub_1.csv',
                             placeholder = 'dws_1/sub_1.csv'),
                   submitButton(text = '변경사항을 적용합니다.'),
-                  helpText("조금만 기다리면 나옵니다.")
+                  helpText("조금만 기다리면 나옵니다."))
                   
                 ),
                 column(
-                  width = 6,
+                  width = 7,
                   plotOutput(outputId = 'peak_plot')
                 )
               ),
               fluidRow(
                 column(
-                  width = 10,
+                  width = 12,
                   DT::dataTableOutput(outputId = "peak_DT")
                 )
               )
@@ -112,6 +121,7 @@ body <- dashboardBody(
               fluidRow(
                 column(
                   width = 3,
+                  box(width = 10,
                   radioButtons(inputId = 'sel_model',
                                label = '사용할 모델을 선택하세요',
                                choices = c("RF"),
@@ -141,7 +151,7 @@ body <- dashboardBody(
                               max = 20,
                               step = 1),
                   helpText('훈련할땐 교차검증이 사용되지 않습니다.'),
-                  submitButton(text = '변경사항을 적용합니다.')
+                  submitButton(text = '변경사항을 적용합니다.'))
                 ),
                 column(
                   width = 8,
@@ -154,7 +164,8 @@ body <- dashboardBody(
 )
 
 ui <- dashboardPage(
-  dashboardHeader(title = '비정형 과제'),
+  skin = 'green',
+  dashboardHeader(title = '20171480 김의년'),
   sidebar,
   body
 )
@@ -169,55 +180,55 @@ server <- function(input, output, session){
   
   output$sta_plot_1 <- renderPlot({
     if(input$statistics_input == "평균"){
-      boxplot(HAR_summary$maguserAcceleration_fn1, main = "maguserAcceleration 평균의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`maguserAcceleration의 평균`, main = "maguserAcceleration 평균의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "최소값"){
-      boxplot(HAR_summary$maguserAcceleration_fn2, main = "maguserAcceleration 최소값의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`maguserAcceleration의 최소값`, main = "maguserAcceleration 최소값의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "최대값"){
-      boxplot(HAR_summary$maguserAcceleration_fn3, main = "maguserAcceleration 최대값의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`maguserAcceleration의 최대값`, main = "maguserAcceleration 최대값의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "표준편차"){
-      boxplot(HAR_summary$maguserAcceleration_fn4, main = "maguserAcceleration 표준편차의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`maguserAcceleration의 표준편차`, main = "maguserAcceleration 표준편차의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "왜도"){
-      boxplot(HAR_summary$maguserAcceleration_fn5, main = "maguserAcceleration 왜도의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`maguserAcceleration의 왜도`, main = "maguserAcceleration 왜도의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "rms"){
-      boxplot(HAR_summary$maguserAcceleration_fn6, main = "maguserAcceleration rms의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`maguserAcceleration의 rms`, main = "maguserAcceleration rms의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "rss"){
-      boxplot(HAR_summary$maguserAcceleration_fn7, main = "maguserAcceleration rss의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`maguserAcceleration의 rss`, main = "maguserAcceleration rss의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "첨도"){
-      boxplot(HAR_summary$maguserAcceleration_fn9, main = "maguserAcceleration 첨도의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`maguserAcceleration의 첨도`, main = "maguserAcceleration 첨도의 박스 그래프", ylab = '값')
     }
   })
   
   output$sta_plot_2 <- renderPlot({
     if(input$statistics_input == "평균"){
-      boxplot(HAR_summary$magrotationRate_fn1, main = "magrotationRate 평균의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`magrotationRate의 평균`, main = "magrotationRate 평균의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "최소값"){
-      boxplot(HAR_summary$magrotationRate_fn2, main = "magrotationRate 최소값의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`magrotationRate의 최소값`, main = "magrotationRate 최소값의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "최대값"){
-      boxplot(HAR_summary$magrotationRate_fn3, main = "magrotationRate 최대값의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`magrotationRate의 최대값`, main = "magrotationRate 최대값의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "표준편차"){
-      boxplot(HAR_summary$magrotationRate_fn4, main = "magrotationRate 표준편차의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`magrotationRate의 표준편차`, main = "magrotationRate 표준편차의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "왜도"){
-      boxplot(HAR_summary$magrotationRate_fn5, main = "magrotationRate 왜도의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`magrotationRate의 왜도`, main = "magrotationRate 왜도의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "rms"){
-      boxplot(HAR_summary$magrotationRate_fn6, main = "magrotationRate rms의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`magrotationRate의 rms`, main = "magrotationRate rms의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "rss"){
-      boxplot(HAR_summary$magrotationRate_fn7, main = "magrotationRate rss의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`magrotationRate의 rss`, main = "magrotationRate rss의 박스 그래프", ylab = '값')
     }
     if(input$statistics_input == "첨도"){
-      boxplot(HAR_summary$magrotationRate_fn9, main = "magrotationRate 첨도의 박스 그래프", ylab = '값')
+      boxplot(HAR_summary$`magrotationRate의 첨도`, main = "magrotationRate 첨도의 박스 그래프", ylab = '값')
     }
   })
   

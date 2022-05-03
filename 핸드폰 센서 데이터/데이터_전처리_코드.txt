@@ -57,6 +57,12 @@ HAR_summary <- HAR_total %>% group_by(id, exp_no, activity) %>% summarize_at(.va
 HAR_summary$activity <- as.factor(HAR_summary$activity)
 HAR_summary <- HAR_summary %>% ungroup() %>% select(-c("id","exp_no"))
 
+colnames(HAR_summary) <- c("activity",'maguserAcceleration의 평균','magrotationRate의 평균','maguserAcceleration의 최소값','magrotationRate의 최소값',
+                           'maguserAcceleration의 최대값','magrotationRate의 최대값','maguserAcceleration의 표준편차','magrotationRate의 표준편차',
+                           'maguserAcceleration의 왜도','magrotationRate의 왜도','maguserAcceleration의 rms','magrotationRate의 rms',
+                           'maguserAcceleration의 rss','magrotationRate의 rss','maguserAcceleration의 IQR','magrotationRate의 IQR',
+                           'maguserAcceleration의 첨도','magrotationRate의 첨도')
+
 HAR_summary.pca <- prcomp(HAR_summary %>% ungroup() %>% select(-activity),center = TRUE,scale. = TRUE)
 
 plot(HAR_summary.pca$sdev,type = 'o',main = 'ScreePlot')
